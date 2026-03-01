@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 
+const compression = require('compression');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
@@ -12,12 +13,24 @@ connectDB();
 
 const app = express();
 
-// Security Middleware
+// Security & Optimization Middleware
 app.use(helmet());
+app.use(compression());
 app.use(cors({
-    origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:5177', 'http://localhost:5178'],
+    origin: (process.env.CLIENT_URL || '').split(',').map(u => u.trim()).filter(Boolean).concat(['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:5177', 'http://localhost:5178']),
     credentials: true,
 }));
+
+// Port configuration
+const PORT = process.env.PORT || 5000;
+
+// Trust priority for Render
+app.set('trust proxy', 1);
+
+// Health check route for Render
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
 
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -57,8 +70,6 @@ app.use((err, req, res, next) => {
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,
     });
 });
-
-const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
