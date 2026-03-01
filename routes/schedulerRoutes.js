@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const schedulerController = require('../controllers/schedulerController');
-const { protect } = require('../middleware/authMiddleware');
+const protect = require('../middleware/authMiddleware');
 
 router.post('/', protect, schedulerController.addTask);
 router.get('/', protect, schedulerController.getTasks);
