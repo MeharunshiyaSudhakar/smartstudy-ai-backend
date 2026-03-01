@@ -13,6 +13,19 @@ connectDB();
 
 const app = express();
 
+// Health check routes (Top priority for environment monitoring)
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+app.get('/', (req, res) => {
+    res.send('SmartStudy AI API is running...');
+});
+
 // Security & Optimization Middleware
 app.use(helmet());
 app.use(compression());
@@ -26,11 +39,6 @@ const PORT = process.env.PORT || 5000;
 
 // Trust priority for Render
 app.set('trust proxy', 1);
-
-// Health check route for Render
-app.get("/health", (req, res) => {
-    res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
-});
 
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -55,11 +63,6 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/qa', require('./routes/qaRoutes'));
 app.use('/api/interview', require('./routes/interviewRoutes'));
 app.use('/api/history', require('./routes/historyRoutes'));
-
-// Basic Route for health check
-app.get('/', (req, res) => {
-    res.send('SmartStudy AI API is running...');
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
