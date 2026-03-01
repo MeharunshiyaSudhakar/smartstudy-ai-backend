@@ -5,7 +5,7 @@ const {
     generateQuestion,
     evaluateInterview
 } = require('../controllers/interviewController');
-const { protect } = require('../middleware/authMiddleware');
+const protect = require('../middleware/authMiddleware');
 const { checkInterviewLimit } = require('../middleware/subscriptionMiddleware');
 
 const router = express.Router();

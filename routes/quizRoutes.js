@@ -1,6 +1,6 @@
 const express = require('express');
 const { generateQuiz, submitQuizResults, getQuizHistory } = require('../controllers/quizController');
-const { protect } = require('../middleware/authMiddleware');
+const protect = require('../middleware/authMiddleware');
 const { checkRateLimit } = require('../middleware/subscriptionMiddleware');
 
 const router = express.Router();
